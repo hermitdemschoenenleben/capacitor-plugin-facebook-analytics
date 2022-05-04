@@ -1,5 +1,7 @@
 package com.vrba.plugins.facebookanalytics;
 
+import android.util.Log;
+
 import com.facebook.appevents.AppEventsConstants;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
@@ -8,6 +10,8 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.FacebookSdk;
+import com.facebook.LoggingBehavior;
 
 import android.os.Bundle;
 
@@ -21,15 +25,51 @@ import java.util.Iterator;
 public class FacebookAnalytics extends Plugin {
     private AppEventsLogger logger;
 
+    private static final String PLUGIN_TAG = "FacebookAnalyticsCapacitorPlugin";
+
     @Override
     public void load() {
         if (bridge == null) {
             bridge = this.getBridge();
         }
 
-        logger = AppEventsLogger.newLogger(bridge.getActivity().getApplicationContext());
-
         super.load();
+    }
+
+    @PluginMethod
+    public void prepareLogging(PluginCall call) {
+        // FacebookSdk.sdkInitialize(bridge.getActivity().getApplicationContext());
+        // AppEventsLogger.activateApp(bridge.getActivity().getApplication());
+
+        // enable debug mode of facebook sdk
+        if (logger == null) {
+            Log.d(PLUGIN_TAG, "initializing SDK");
+
+            /*
+            Log.d(PLUGIN_TAG, "set debug enabled");
+            FacebookSdk.setIsDebugEnabled(true);
+            // cf. https://developers.facebook.com/docs/reference/android/current/class/LoggingBehavior/
+            FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS);
+            FacebookSdk.addLoggingBehavior(LoggingBehavior.REQUESTS);
+            FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_RAW_RESPONSES);
+            */
+
+            FacebookSdk.setAutoInitEnabled(true);
+            FacebookSdk.setAdvertiserIDCollectionEnabled(true);
+            FacebookSdk.fullyInitialize();
+
+            logger = AppEventsLogger.newLogger(bridge.getActivity().getApplicationContext());
+        } else {
+            Log.d(PLUGIN_TAG, "SDK already initialized");
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void flush(PluginCall call) {
+        logger.flush();
+        call.resolve();
     }
 
     @PluginMethod
