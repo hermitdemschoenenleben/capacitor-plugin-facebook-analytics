@@ -186,13 +186,7 @@ public class FacebookAnalytics extends Plugin {
     }
 
     @PluginMethod
-    public void logInitiatedCheckout(PluginCall call) {
-        if (!call.getData().has("amount")) {
-            call.reject("Must provide an amount");
-            return;
-        }
-        Double amount = call.getDouble("amount", null);
-
+    public void logCompletedTutorial(PluginCall call) {
         JSObject params = call.getObject("params", new JSObject());
         if (params.length() > 0) {
             Bundle parameters = new Bundle();
@@ -203,9 +197,9 @@ public class FacebookAnalytics extends Plugin {
                 String value = params.getString(key);
                 parameters.putString(key, value);
             }
-            logger.logEvent(AppEventsConstants.EVENT_NAME_INITIATED_CHECKOUT, amount, parameters);
+            logger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_TUTORIAL, parameters);
         } else {
-            logger.logEvent(AppEventsConstants.EVENT_NAME_INITIATED_CHECKOUT, amount);
+            logger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_TUTORIAL);
         }
 
         call.resolve();
