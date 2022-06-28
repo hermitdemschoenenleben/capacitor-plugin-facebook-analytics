@@ -38,15 +38,14 @@ public class FacebookAnalytics extends Plugin {
 
     @PluginMethod
     public void prepareLogging(PluginCall call) {
-        // FacebookSdk.sdkInitialize(bridge.getActivity().getApplicationContext());
-        // AppEventsLogger.activateApp(bridge.getActivity().getApplication());
-
         // enable debug mode of facebook sdk
         if (logger == null) {
             Log.d(PLUGIN_TAG, "initializing SDK");
 
             /*
             Log.d(PLUGIN_TAG, "set debug enabled");
+
+            // uncomment this code for debug logs of facebook SDK
             FacebookSdk.setIsDebugEnabled(true);
             // cf. https://developers.facebook.com/docs/reference/android/current/class/LoggingBehavior/
             FacebookSdk.addLoggingBehavior(LoggingBehavior.APP_EVENTS);
@@ -59,6 +58,9 @@ public class FacebookAnalytics extends Plugin {
             FacebookSdk.fullyInitialize();
 
             logger = AppEventsLogger.newLogger(bridge.getActivity().getApplicationContext());
+
+            // this line is required for reporting app installs to facebook
+            logger.activateApp(bridge.getActivity().getApplication());
         } else {
             Log.d(PLUGIN_TAG, "SDK already initialized");
         }
