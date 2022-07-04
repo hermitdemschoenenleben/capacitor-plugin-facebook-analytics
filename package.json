@@ -6,9 +6,6 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "lint": "npm run prettier -- --check && npm run swiftlint -- lint",
-    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
-    "swiftlint": "node-swiftlint",
     "build": "npm run clean && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
@@ -21,15 +18,8 @@
     "@capacitor/android": "^3.6.0",
     "@capacitor/core": "^3.6.0",
     "@capacitor/ios": "^3.6.0",
-    "@ionic/prettier-config": "^2.0.0",
-    "@ionic/swiftlint-config": "^1.1.2",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@types/eslint": "^8.4.3",
-    "prettier": "^2.7.1",
-    "prettier-plugin-java": "^1.6.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.75.7",
-    "swiftlint": "^1.0.1",
     "typescript": "~4.6.4"
   },
   "peerDependencies": {
@@ -54,16 +44,11 @@
       "src": "android"
     }
   },
-  "prettier": "@ionic/prettier-config",
-  "swiftlint": "@ionic/swiftlint-config",
   "repository": {
     "type": "git",
     "url": "git@github.com:SpellChucker/capacitor-plugin-facebook-analytics.git"
   },
   "bugs": {
     "url": "git@github.com:SpellChucker/capacitor-plugin-facebook-analytics.git/issues"
-  },
-  "dependencies": {
-    "@types/estree": "^0.0.52"
   }
 }
