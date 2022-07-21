@@ -1,6 +1,8 @@
 import Foundation
 import Capacitor
 import FBSDKCoreKit
+import FBSDKCoreKit.FBSDKSettings
+import AppTrackingTransparency
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -8,6 +10,49 @@ import FBSDKCoreKit
  */
 @objc(FacebookAnalytics)
 public class FacebookAnalytics: CAPPlugin {
+
+    @objc func prepareLogging(_ call: CAPPluginCall) {
+        // uncomment this for detailed logging of fbsdk
+        // Settings.shared.enableLoggingBehavior(.appEvents)
+        // Settings.shared.enableLoggingBehavior(.networkRequests)
+
+        let activateAppAndResolve: () -> Void = {
+          // activateApp has to run on main thread
+          DispatchQueue.main.async {
+              print("call fbsdk activateApp")
+              AppEvents.shared.activateApp()
+              call.resolve()
+          }
+        }
+
+        // the commented code below is used for requesting tracking permission
+        // on ios. Only if this is granted, we may collect ad id and activate
+        // facebooks trackingEnabled setting.
+        // cf https://stackoverflow.com/a/67601694
+        // for now, we don't want to ask for tracking permission and we don't
+        // want to collect ad ID as we just want to test facebook integration
+        // in general.
+        activateAppAndResolve()
+        // if #available(iOS 14, *) {
+        //     ATTrackingManager.requestTrackingAuthorization { status in
+        //         switch status {
+        //             case .authorized:
+        //                 print("enable tracking")
+        //                 Settings.shared.isAdvertiserTrackingEnabled = true;
+        //                 Settings.shared.isAdvertiserIDCollectionEnabled = true;
+
+        //             case .denied:
+        //                 print("disable tracking")
+        //             default:
+        //                 print("disable tracking")
+        //         }
+
+        //         activateAppAndResolve()
+        //     }
+        // } else {
+        //   activateAppAndResolve()
+        // }
+    }
 
     @objc func logEvent(_ call: CAPPluginCall) {
         guard let event = call.getString("event") else {
@@ -17,78 +62,25 @@ public class FacebookAnalytics: CAPPlugin {
 
         print(event)
 
-        if let valueToSum = call.getDouble("valueToSum") {
-            if let params = call.getObject("params") {
-                AppEvents.logEvent(.init(event), valueToSum: valueToSum, parameters: params)
-            } else {
-                AppEvents.logEvent(.init(event), valueToSum: valueToSum)
-            }
-            
-        } else {
-            if let params = call.getObject("params") {
-                AppEvents.logEvent(.init(event), parameters: params)
-            } else {
-                AppEvents.logEvent(.init(event))
-            }
-        }
-        
+        AppEvents.shared.logEvent(.init(event))
 
         call.resolve()
     }
 
-    @objc func logPurchase(_ call: CAPPluginCall) {
-        guard let amount = call.getDouble("amount") else {
-            call.reject("Missing amount argument")
-            return;
-        }
-        
-        let currency = call.getString("currency") ?? "USD"
-        let params = call.getObject("params") ?? [String:String]()
-        
-        AppEvents.logPurchase(amount, currency: currency, parameters: params)
-
-        call.resolve()
-    }
-
-    @objc func logAddPaymentInfo(_ call: CAPPluginCall) {
-        let success = call.getInt("success") ?? 0
-        AppEvents.logEvent(.addedPaymentInfo, parameters: ["success": success])
-
-        call.resolve()
-    }
-
-    @objc func logAddToCart(_ call: CAPPluginCall) {
-        guard let amount = call.getDouble("amount") else {
-            call.reject("Missing amount argument")
-            return;
-        }
-        let currency = call.getString("currency") ?? "USD"
-
-        var params = call.getObject("params") ?? [String: String]()
-        
-        params[AppEvents.ParameterName.currency.rawValue] = currency
-
-        AppEvents.logEvent(.addedToCart, valueToSum: amount, parameters: params)
-
-        call.resolve()
-    }
-    
     @objc func logCompleteRegistration(_ call: CAPPluginCall) {
-        let parameters = call.getObject("params") ?? [String: String]()
-
-        AppEvents.logEvent(.completedRegistration, parameters: parameters)
+        AppEvents.shared.logEvent(.completedRegistration)
 
         call.resolve()
     }
-    @objc func logInitiatedCheckout(_ call: CAPPluginCall) {
-        guard let amount = call.getDouble("amount") else {
-            call.reject("Missing amount argument")
-            return;
-        }        
-        
-        let parameters = call.getObject("params") ?? ["default": "default"]
 
-        AppEvents.logEvent(.initiatedCheckout, valueToSum: amount, parameters: parameters)
+    @objc func logCompletedTutorial(_ call: CAPPluginCall) {
+        AppEvents.shared.logEvent(.completedTutorial)
+
+        call.resolve()
+    }
+
+    @objc func flush(_ call: CAPPluginCall) {
+        AppEvents.shared.flush()
 
         call.resolve()
     }

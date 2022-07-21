@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
   s.ios.deployment_target  = '12.0'
   s.dependency 'Capacitor'
   s.swift_version = '5.1'
-  s.dependency 'FBSDKCoreKit', '~> 12.0.0'
+  s.dependency 'FBSDKCoreKit', '~> 14.1.0'
 end
