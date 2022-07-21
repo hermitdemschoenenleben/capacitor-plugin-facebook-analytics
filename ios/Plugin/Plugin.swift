@@ -16,6 +16,10 @@ public class FacebookAnalytics: CAPPlugin {
         // Settings.shared.enableLoggingBehavior(.appEvents)
         // Settings.shared.enableLoggingBehavior(.networkRequests)
 
+        call.reject("facebook sdk on ios is disabled")
+
+        /*
+
         let activateAppAndResolve: () -> Void = {
           // activateApp has to run on main thread
           DispatchQueue.main.async {
@@ -52,6 +56,7 @@ public class FacebookAnalytics: CAPPlugin {
         // } else {
         //   activateAppAndResolve()
         // }
+        */
     }
 
     @objc func logEvent(_ call: CAPPluginCall) {
